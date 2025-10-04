@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../models/User.js"
+import mailer from "../helpers/mailer.js";
 
 
 
@@ -32,8 +33,8 @@ export async function getSingleUser(request, response) {
 
 export async function createUser(request, response) {
     try {
-        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
-        let {avatar} = request.body;
+        const { nome, cognome, email, dataDiNascita, avatar, docPersonali } = request.body;
+
         if (!nome || !cognome || !email || !dataDiNascita) {
             return response.status(400).json({ message: "I campi nome, cognome, email e data DiNascita sono obbligatori" })
         }
@@ -52,6 +53,44 @@ export async function createUser(request, response) {
         response
             .status(500)
             .json({ message: "errore nella creazione del singolo utente", error });
+    }
+
+}
+
+export async function modifyUser(request, response) {
+    try {
+        const { id } = request.params
+        const { nome, cognome, email, dataDiNascita, avatar, docPersonali } = request.body;
+
+        if (!nome || !cognome || !email || !dataDiNascita) {
+            return response.status(400).json({ message: "I campi nome, cognome, email e data DiNascita sono obbligatori" })
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { nome, cognome, email, dataDiNascita, avatar, docPersonali },
+            { new: true }
+        );
+        if (!updatedUser) {
+            return response.status(400).json({ message: "Utente non trovato", error });
+        }
+
+        const html = `
+    <h1>Dati utente modificati</h1>
+    <p>Ciao ${nome} ${cognome}, i tuoi dati utenti sono stati modificati correttamente</p>
+  `;
+
+        const Mail = await mailer.sendMail({
+            to: request.user.email,
+            subject: "Edited successfully",
+            html: html,
+            from: "amministrazione@teamnewracing.com",
+        });
+        response.status(200).json(updatedUser);
+    } catch (error) {
+        response
+            .status(500)
+            .json({ message: "errore nella modifica dell'utente", error });
     }
 
 }
