@@ -1,0 +1,4 @@
+node_modules
+## Solo se hai mac
+.DS_Store
+.env
