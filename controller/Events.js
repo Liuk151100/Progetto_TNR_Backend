@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
-import User from "../models/User.js"
 import mailer from "../helpers/mailer.js";
 import { getAll } from "./Users.js";
+import Event from "../models/Event.js";
 
 
 
 
 export async function getAllEvents(request, response) {
     try {
-        const users = await Event.find()
-        response.status(200).json(users)
+        const events = await Event.find()
+        response.status(200).json(events)
     } catch (error) {
         response.status(500).json({ message: "Errore nel recupero degli eventi", error })
     }
@@ -40,7 +40,7 @@ export async function createEvent(request, response) {
             return response.status(400).json({ message: "I campi titolo, data e luogo sono obbligatori" })
         }
         // Controllo se esiste già un utente con la stessa email
-        const existingEvent = await User.findOne({ data });
+        const existingEvent = await Event.findOne({ data });
 
         if (existingEvent) {
             return response.status(400).json({ message: "Evento già creato" });

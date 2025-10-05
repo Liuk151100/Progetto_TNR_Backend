@@ -3,10 +3,10 @@ import { createUser, deleteUser, getAll, getSingleUser, modifyUser } from "../co
 import { validateId } from "../middlewares/validateId.js";
 
 const usersRouter = express.Router();
-usersRouter.get("/",getAll)
-usersRouter.get("/:id",validateId,getSingleUser)
-usersRouter.post("/",createUser)
-usersRouter.patch("/:id", validateId ,modifyUser)
-usersRouter.delete("/:id",validateId,deleteUser)
+usersRouter.get("/", getAll)
+usersRouter.get("/:id", validateId, getSingleUser)
+usersRouter.post("/", createUser)
+usersRouter.patch("/:id", validateId, modifyUser)
+usersRouter.delete("/:id", validateId, deleteUser)
 
 export default usersRouter

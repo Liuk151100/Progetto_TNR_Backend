@@ -5,6 +5,7 @@ import { connectDB } from './db.js';
 import passport from "passport";
 import googleStrategy from "./config/passportConfig.js";
 import usersRouter from './routes/Users.js';
+import eventsRouter from './routes/Events.js';
 
 const port = process.env.PORT;
 
@@ -16,6 +17,7 @@ server.use(express.json()); // per gestire i body di tipo json
 passport.use(googleStrategy); 
 
 server.use("/users", usersRouter); 
+server.use("/events", eventsRouter); 
 
 connectDB()
 
