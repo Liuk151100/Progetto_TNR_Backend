@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import mailer from "../helpers/mailer.js";
-import { getAll } from "./Users.js";
 import Event from "../models/Event.js";
+import User from "../models/User.js";
 
 
 
@@ -49,9 +49,9 @@ export async function createEvent(request, response) {
         const newEvent = new Event({ titolo, data, luogo, partecipanti })
         const eventSaved = await newEvent.save()
 
-        const users = await getAll();
+        const users = await User.find()
 
-        for (const user of users.data) {
+        for (const user of users) {
             const html = `
                 <h1>Nuovo evento aggiunto al calendario</h1>
                 <p>Ciao ${user.nome} ${user.cognome}, il presidente del Team New Racing ha aggiunto l'evento ${titolo} 
@@ -62,7 +62,7 @@ export async function createEvent(request, response) {
                 to: user.email,
                 subject: "Nuovo evento in programma",
                 html,
-                from: "amministrazione@teamnewracing.com",
+                from: "lucafaini21@gmail.com",//"amministrazione@teamnewracing.com"
             });
         }
 
@@ -94,9 +94,9 @@ export async function modifyEvent(request, response) {
             return response.status(400).json({ message: "Evento non trovato", error });
         }
 
-        const users = await getAll();
+        const users = await User.find()
 
-        for (const user of users.data) {
+        for (const user of users) {
             const html = `
                 <h1>Evento modificato</h1>
                 <p>Ciao ${user.data.nome} ${user.data.cognome}, il presidente del Team New Racing ha modificato dei dati dell'evento 
@@ -104,16 +104,16 @@ export async function modifyEvent(request, response) {
                 momento insieme a tutto lo staff.</p>`;
 
             const Mail = await mailer.sendMail({
-            to: user.data.email,
-            subject: "Aggiornamento evento in programma",
-            html: html,
-            from: "amministrazione@teamnewracing.com",
+                to: user.data.email,
+                subject: "Aggiornamento evento in programma",
+                html: html,
+                from: "lucafaini21@gmail.com",//"amministrazione@teamnewracing.com"
             });
         }
 
         response.status(200).json(updatedEvent);
 
-        
+
     } catch (error) {
         response
             .status(500)
