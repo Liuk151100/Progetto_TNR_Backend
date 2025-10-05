@@ -10,7 +10,7 @@ export async function getAll(request, response) {
         const users = await User.find()
         response.status(200).json(users)
     } catch (error) {
-        response.status(500).json({ message: "Errore nel recupero degli autori", error })
+        response.status(500).json({ message: "Errore nel recupero degli utenti", error })
     }
 }
 
@@ -22,7 +22,7 @@ export async function getSingleUser(request, response) {
         const { id } = request.params;
         const user = await User.findById(id);
         if (!user)
-            return response.status(404).json({ message: "user non trovato" });
+            return response.status(404).json({ message: "Utente non trovato" });
         response.status(200).json(user);
     } catch (error) {
         response
@@ -36,7 +36,7 @@ export async function createUser(request, response) {
         const { nome, cognome, email, dataDiNascita, avatar, docPersonali } = request.body;
 
         if (!nome || !cognome || !email || !dataDiNascita) {
-            return response.status(400).json({ message: "I campi nome, cognome, email e data DiNascita sono obbligatori" })
+            return response.status(400).json({ message: "I campi nome, cognome, email e data di nascita sono obbligatori" })
         }
         // Controllo se esiste già un utente con la stessa email
         const existingUser = await User.findOne({ email });
