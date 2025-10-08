@@ -62,7 +62,7 @@ export async function createEvent(request, response) {
                 to: user.email,
                 subject: "Nuovo evento in programma",
                 html,
-                from: "lucafaini21@gmail.com",//"amministrazione@teamnewracing.com"
+                from: "amministrazione@teamnewracing.com",
             });
         }
 
@@ -107,7 +107,7 @@ export async function modifyEvent(request, response) {
                 to: user.data.email,
                 subject: "Aggiornamento evento in programma",
                 html: html,
-                from: "lucafaini21@gmail.com",//"amministrazione@teamnewracing.com"
+                from: "amministrazione@teamnewracing.com",
             });
         }
 
