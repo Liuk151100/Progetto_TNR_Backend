@@ -6,6 +6,7 @@ import passport from "passport";
 import googleStrategy from "./config/passportConfig.js";
 import usersRouter from './routes/Users.js';
 import eventsRouter from './routes/Events.js';
+import sponsorsRouter from './routes/Sponsors.js';
 
 const port = process.env.PORT;
 
@@ -18,6 +19,7 @@ passport.use(googleStrategy);
 
 server.use("/users", usersRouter); 
 server.use("/events", eventsRouter); 
+server.use("/sponsors", sponsorsRouter); 
 
 connectDB()
 
