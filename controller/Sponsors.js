@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import User from "../models/User.js"
 import Sponsor from "../models/Sponsor.js";
 
 
