@@ -42,7 +42,7 @@ export async function createSponsor(request, response) {
             return response.status(400).json({ message: "Sponsor già registrato" });
         }
 
-        const newSponsor = new User({ nome, cognome, email, dataDiNascita, avatar, docPersonali })
+        const newSponsor = new Sponsor({nomeSocieta, prioVis, logo})
         const sponsorSaved = await newSponsor.save()
         response.status(201).json(sponsorSaved)
 
