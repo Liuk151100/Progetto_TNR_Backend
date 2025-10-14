@@ -29,9 +29,9 @@ export async function getSingleSponsor(request, response) {
 
 export async function createSponsor(request, response) {
     try {
-        const { nomeSocieta, prioVis, logo} = request.body;
+        const { nomeSocieta, prioVis } = request.body;
 
-        if (!nomeSocieta || !logo) {
+        if (!nomeSocieta || !request.file.path) {
             return response.status(400).json({ message: "I campi nome società e il logo sono obbligatori" })
         }
         // Controllo se esiste già uno sponsor con lo stesso nome società
@@ -41,7 +41,7 @@ export async function createSponsor(request, response) {
             return response.status(400).json({ message: "Sponsor già registrato" });
         }
 
-        const newSponsor = new Sponsor({nomeSocieta, prioVis, logo})
+        const newSponsor = new Sponsor({ nomeSocieta, prioVis, logo:request.file.path })
         const sponsorSaved = await newSponsor.save()
         response.status(201).json(sponsorSaved)
 
@@ -56,15 +56,15 @@ export async function createSponsor(request, response) {
 export async function modifySponsor(request, response) {
     try {
         const { id } = request.params
-        const { nomeSocieta, prioVis, logo} = request.body;
+        const { nomeSocieta, prioVis } = request.body;
 
-        if (!nomeSocieta || !logo) {
+        if (!nomeSocieta || !request.file.path) {
             return response.status(400).json({ message: "I campi nome società e il logo sono obbligatori" })
         }
 
         const updatedSponsor = await Sponsor.findByIdAndUpdate(
             id,
-            { nomeSocieta, prioVis, logo},
+            { nomeSocieta, prioVis, logo:request.file.path },
             { new: true }
         );
         if (!updatedSponsor) {

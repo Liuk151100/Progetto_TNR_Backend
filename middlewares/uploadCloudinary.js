@@ -26,11 +26,8 @@ const logoSponsorStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "TeamNewRacing/sponsors",
-    format: "jpg",
-    public_id: (req, file) => {
-      const ext = file.originalname.split(".").pop();
-      return `${uuidv4()}.${ext}`; // nome unico
-    },
+    format: "png",
+    public_id: () => uuidv4(),
   },
 });
 

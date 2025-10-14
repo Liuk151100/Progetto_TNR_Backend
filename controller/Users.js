@@ -33,7 +33,7 @@ export async function getSingleUser(request, response) {
 
 export async function createUser(request, response) {
     try {
-        const { nome, cognome, email, dataDiNascita, avatar, docPersonali } = request.body;
+        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
 
         if (!nome || !cognome || !email || !dataDiNascita) {
             return response.status(400).json({ message: "I campi nome, cognome, email e data di nascita sono obbligatori" })
@@ -45,7 +45,7 @@ export async function createUser(request, response) {
             return response.status(400).json({ message: "Utente già registrato" });
         }
 
-        const newUser = new User({ nome, cognome, email, dataDiNascita, avatar, docPersonali })
+        const newUser = new User({ nome, cognome, email, dataDiNascita, avatar:request.file.path, docPersonali })
         const userSaved = await newUser.save()
         response.status(201).json(userSaved)
 
@@ -60,7 +60,7 @@ export async function createUser(request, response) {
 export async function modifyUser(request, response) {
     try {
         const { id } = request.params
-        const { nome, cognome, email, dataDiNascita, avatar, docPersonali } = request.body;
+        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
 
         if (!nome || !cognome || !email || !dataDiNascita) {
             return response.status(400).json({ message: "I campi nome, cognome, email e data DiNascita sono obbligatori" })
@@ -68,7 +68,7 @@ export async function modifyUser(request, response) {
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { nome, cognome, email, dataDiNascita, avatar, docPersonali },
+            { nome, cognome, email, dataDiNascita, avatar:request.file.path, docPersonali },
             { new: true }
         );
         if (!updatedUser) {
