@@ -22,9 +22,9 @@ const googleStrategy = new GoogleStrategy(
           nome: profile._json.given_name,
           cognome: profile._json.family_name,
           email: profile._json.email,
-          avatar: profile._json.picture
-                        ? { path: profile._json.picture }
-                        : null,
+          // avatar: profile._json.picture
+          //               ? { path: profile._json.picture }
+          //               : null,
           googleId: profile.id,
         });
       }

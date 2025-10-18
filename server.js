@@ -7,6 +7,7 @@ import googleStrategy from "./config/passportConfig.js";
 import usersRouter from './routes/Users.js';
 import eventsRouter from './routes/Events.js';
 import sponsorsRouter from './routes/Sponsors.js';
+import authRouter from './routes/Auth.js';
 
 const port = process.env.PORT;
 
@@ -17,6 +18,7 @@ server.use(express.json()); // per gestire i body di tipo json
 
 passport.use(googleStrategy); 
 
+server.use("/auth", authRouter);
 server.use("/users", usersRouter); 
 server.use("/events", eventsRouter); 
 server.use("/sponsors", sponsorsRouter); 

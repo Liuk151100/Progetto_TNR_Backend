@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import { signJWT } from "../helpers/jwt.js";
+import { generateJWT } from "../helpers/jwt.js";
 
 export async function register(request, response) {
   const { nome, cognome, email, password, dataDiNascita } = request.body;
@@ -10,7 +10,7 @@ export async function register(request, response) {
   const newUser = new User({ nome, cognome, email, password, dataDiNascita });
   await newUser.save();
 
-  const token = await signJWT({ id: newUser._id });
+  const token = await generateJWT({ id: newUser._id });
   try {
     const html = `
       <h1>Ciao, ${nome} ${cognome}</h1>
@@ -45,7 +45,7 @@ export async function login(request, response) {
   if (userMail) {
     //non nello stesso if perché se usermail è undefined poi comparepassword non fa
     if (await userMail.comparePassword(password)) {
-      const jwt = await signJWT({
+      const jwt = await generateJWT({
         id: userMail._id,
       });
       return response.status(200).json({message: 'Token generato con successo', jwt}); 
@@ -57,6 +57,6 @@ export async function login(request, response) {
 
 
 export async function redirectToMe(request, response, next) {
-  response.redirect(`${process.env.FRONTEND_HOST}/auth/google-callback?jwt=${request.user.jwt}`); //messo da me in request.user.jwt
+  response.redirect(`${process.env.FRONTEND_HOST}/?jwt=${request.user.jwt}`); //messo da me in request.user.jwt
 }
 

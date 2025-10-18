@@ -1,5 +1,5 @@
 import express from "express";
-import { login, register, redirectToMe } from "../controllers/Auth.js";
+import { login, register, redirectToMe } from "../controller/Auth.js";
 import passport from "passport";
 import { registerMw } from "../middlewares/registerMw.js";
 
@@ -11,12 +11,12 @@ authRouter.post("/login", login);
 
 authRouter.get(
   "/login-google",
-  passport.authenticate("google", { scope: ['profile', 'email', 'birthday'] })//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! provare anche user al posto di birthday
+  passport.authenticate("google", { scope: ['profile', 'email'] })//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! provare anche user al posto di birthday
 );
 
 authRouter.get(
-  "/google-callback",
-  passport.authenticate("google", { session: false }), //false perché non stiamo usando i coockies
+  "/callback-google",
+  passport.authenticate("google", { session: false }), //false perché non stiamo usando i cookies
   redirectToMe
 );
 
