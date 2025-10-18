@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import { generateJWT } from "../helpers/jwt.js";
+import mailer from "../helpers/mailer.js";
 
 export async function register(request, response) {
   const { nome, cognome, email, password, dataDiNascita } = request.body;
@@ -18,7 +19,6 @@ export async function register(request, response) {
       <br>
       <p>Nei prossimi giorni riceverai tutte le info su allenamenti, gare e comunicazioni del gruppo. Intanto rilassati, preparati e… allaccia le cinture: stiamo per partire!<p>
       <br>
-      <p>→<a href='${process.env.FRONTEND_HOST}/authors/${newUser._id}'>CLICK HERE</a>← to visit your profile</p>
     `;
     
     const infoMail = await mailer.sendMail({
@@ -40,7 +40,9 @@ export async function register(request, response) {
 export async function login(request, response) {
   const { email, password } = request.body;
 
-  const userMail = await Author.findOne({ email }).select("+password");  console.log('utente', userMail);
+  const userMail = await User.findOne({ email }).select("+password"); 
+  console.log('utente', userMail);
+  console.log(password)
 
   if (userMail) {
     //non nello stesso if perché se usermail è undefined poi comparepassword non fa
@@ -57,6 +59,6 @@ export async function login(request, response) {
 
 
 export async function redirectToMe(request, response, next) {
-  response.redirect(`${process.env.FRONTEND_HOST}/?jwt=${request.user.jwt}`); //messo da me in request.user.jwt
+  response.redirect(`${process.env.FRONTEND_HOST}/auth/google-callback/?jwt=${request.user.jwt}`); //messo da me in request.user.jwt
 }
 

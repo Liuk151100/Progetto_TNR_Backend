@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt"
 
 const UserSchema = new Schema({
     nome: { type: String, required: true, trim: true },
@@ -16,6 +17,27 @@ const UserSchema = new Schema({
     ranking: { type: Number, required: false },//Da vedere come popolarlo e calcolarlo in base ai risultati ottenuti (opzionale)
     googleId: String
 })
+
+UserSchema.pre("save", async function (next) {
+  // Se la password non è stata modificata, non la ricalcolare
+  if (!this.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) throw new Error("Password non salvata per questo utente");
+  console.log(candidatePassword)
+  console.log(this.password)
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model('User', UserSchema);
 

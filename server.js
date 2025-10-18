@@ -8,6 +8,7 @@ import usersRouter from './routes/Users.js';
 import eventsRouter from './routes/Events.js';
 import sponsorsRouter from './routes/Sponsors.js';
 import authRouter from './routes/Auth.js';
+import profileRouter from './routes/profile.js';
 
 const port = process.env.PORT;
 
@@ -22,6 +23,7 @@ server.use("/auth", authRouter);
 server.use("/users", usersRouter); 
 server.use("/events", eventsRouter); 
 server.use("/sponsors", sponsorsRouter); 
+server.use("/me", profileRouter); 
 
 connectDB()
 
