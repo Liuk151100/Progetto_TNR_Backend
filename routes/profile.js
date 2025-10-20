@@ -1,6 +1,6 @@
 import express from "express";
-import {deleteMe, edit, getMe } from "../controller/profile.js";
 import { authMW } from "../middlewares/authMW.js";
+import { deleteMe, edit, getMe } from "../controller/profile.js";
 
 const profileRouter = express.Router();
 

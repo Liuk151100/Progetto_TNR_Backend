@@ -45,7 +45,7 @@ export async function createUser(request, response) {
             return response.status(400).json({ message: "Utente già registrato" });
         }
 
-        const newUser = new User({ nome, cognome, email, dataDiNascita, avatar:request.file.path, docPersonali })
+        const newUser = new User({ nome, cognome, email, dataDiNascita, avatar: request.file.path, docPersonali })
         const userSaved = await newUser.save()
         response.status(201).json(userSaved)
 
@@ -58,41 +58,61 @@ export async function createUser(request, response) {
 }
 
 export async function modifyUser(request, response) {
-    try {
-        const { id } = request.params
-        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
+  try {
+    const { id } = request.params;
+    const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
 
-        if (!nome || !cognome || !email || !dataDiNascita) {
-            return response.status(400).json({ message: "I campi nome, cognome, email e data DiNascita sono obbligatori" })
-        }
-
-        const updatedUser = await User.findByIdAndUpdate(
-            id,
-            { nome, cognome, email, dataDiNascita, avatar:request.file.path, docPersonali },
-            { new: true }
-        );
-        if (!updatedUser) {
-            return response.status(400).json({ message: "Utente non trovato", error });
-        }
-
-        const html = `
-    <h1>Dati utente modificati</h1>
-    <p>Ciao ${nome} ${cognome}, i tuoi dati utenti sono stati modificati correttamente</p>
-  `;
-
-        const Mail = await mailer.sendMail({
-            to: request.user.email,
-            subject: "Edited successfully",
-            html: html,
-            from: "amministrazione@teamnewracing.com",
-        });
-        response.status(200).json(updatedUser);
-    } catch (error) {
-        response
-            .status(500)
-            .json({ message: "errore nella modifica dell'utente", error });
+    if (!nome || !cognome || !email || !dataDiNascita) {
+      return response.status(400).json({
+        message: "I campi nome, cognome, email e dataDiNascita sono obbligatori",
+      });
     }
 
+    // Controllo ID valido
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response.status(400).json({ message: "ID utente non valido" });
+    }
+
+    const avatarPath = request.file ? request.file.path : undefined;
+
+    console.log(avatarPath)
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { nome, cognome, email, dataDiNascita, avatar: avatarPath, docPersonali },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return response.status(404).json({ message: "Utente non trovato" });
+    }
+
+    if(updatedUser?.avatar !== avatarPath) {
+        return response.status(501).json({message: "Immagine non supportata"})
+    }
+
+    const html = `
+      <h1>Dati utente modificati</h1>
+      <p>Ciao ${updatedUser.nome} ${updatedUser.cognome}, i tuoi dati utente sono stati modificati correttamente.</p>
+    `;
+
+    console.log("Invio mail a:", updatedUser.email);
+
+    await mailer.sendMail({
+      to: updatedUser.email,
+      subject: "Dati aggiornati correttamente",
+      html,
+      from: "amministrazione@teamnewracing.com",
+    });
+
+    return response.status(200).json(updatedUser);
+
+  } catch (error) {
+    console.error("Errore in modifyUser:", error);
+    return response
+      .status(500)
+      .json({ message: "Errore nella modifica dell'utente", error: error.message });
+  }
 }
 
 

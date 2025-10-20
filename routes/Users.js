@@ -7,7 +7,7 @@ const usersRouter = express.Router();
 usersRouter.get("/", getAll)
 usersRouter.get("/:id", validateId, getSingleUser)
 usersRouter.post("/", manageAvatar ,createUser)
-usersRouter.patch("/:id", validateId, modifyUser)
+usersRouter.patch("/:id",manageAvatar, validateId, modifyUser)
 usersRouter.delete("/:id", validateId, deleteUser)
 
 export default usersRouter
