@@ -1,15 +1,3 @@
-// import { uploadUserAvatar } from "./uploadCloudinary.js";
-
-// export async function manageAvatar (request, response, next){
-//     const {avatar} = request.body;
-//     if (!avatar){
-//         next()
-//     } else {
-//         uploadUserAvatar.single("avatar")
-//         next()
-//     }
-// }
-
 import { uploadSponsorLogo, uploadUserAvatar } from "./uploadCloudinary.js";
 
 export async function manageAvatar(req, res, next) {

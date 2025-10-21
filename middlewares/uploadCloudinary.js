@@ -31,6 +31,17 @@ const logoSponsorStorage = new CloudinaryStorage({
   },
 });
 
+// Storage per documenti
+const documentiStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "user_documents", // cartella su Cloudinary
+    allowed_formats: ["pdf", "jpg", "jpeg", "png"],
+    resource_type: "auto", // permette di caricare anche PDF
+  },
+});
+
 // Middleware multer
 export const uploadUserAvatar = multer({ storage: avatarUsersStorage });
 export const uploadSponsorLogo = multer({ storage: logoSponsorStorage });
+export const uploadDocumenti = multer({ storage: documentiStorage });

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/User.js"
 import mailer from "../helpers/mailer.js";
+import { uploadDocumenti } from "../middlewares/uploadCloudinary.js";
 
 
 
@@ -57,62 +58,123 @@ export async function createUser(request, response) {
 
 }
 
-export async function modifyUser(request, response) {
-  try {
-    const { id } = request.params;
-    const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
+export async function modifyUserAndAvatar(request, response) {
+    try {
+        const { id } = request.params;
+        const { nome, cognome, email, dataDiNascita } = request.body;
 
-    if (!nome || !cognome || !email || !dataDiNascita) {
-      return response.status(400).json({
-        message: "I campi nome, cognome, email e dataDiNascita sono obbligatori",
-      });
+        if (!nome || !cognome || !email || !dataDiNascita) {
+            return response.status(400).json({
+                message: "I campi nome, cognome, email e dataDiNascita sono obbligatori",
+            });
+        }
+
+        // Controllo ID valido
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return response.status(400).json({ message: "ID utente non valido" });
+        }
+
+        const avatarPath = request.file ? request.file.path : undefined;
+
+        console.log(avatarPath)
+
+
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { nome, cognome, email, dataDiNascita, avatar: avatarPath, }, // aggiorna solo se arrivano nuovi file },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return response.status(404).json({ message: "Utente non trovato" });
+        }
+
+        if (request.file && updatedUser?.avatar !== avatarPath) {
+            return response.status(415).json({ message: "Formato immagine non supportato" });
+        }
+
+        //     const html = `
+        //   <h1>Dati utente modificati</h1>
+        //   <p>Ciao ${updatedUser.nome} ${updatedUser.cognome}, i tuoi dati utente sono stati modificati correttamente.</p>
+        // `;
+
+        //     console.log("Invio mail a:", updatedUser.email);
+
+        //     await mailer.sendMail({
+        //         to: updatedUser.email,
+        //         subject: "Dati aggiornati correttamente",
+        //         html,
+        //         from: "amministrazione@teamnewracing.com",
+        //     });
+
+        return response.status(200).json(updatedUser);
+
+    } catch (error) {
+        console.error("Errore in modifyUser:", error);
+        return response
+            .status(500)
+            .json({ message: "Errore nella modifica dell'utente", error: error.message });
     }
+}
 
-    // Controllo ID valido
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response.status(400).json({ message: "ID utente non valido" });
-    }
+export async function modifyUserAndDoc(request, response) {
+    try {
+        const { id } = request.params;
+        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
 
-    const avatarPath = request.file ? request.file.path : undefined;
+        // Controllo ID valido
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return response.status(400).json({ message: "ID utente non valido" });
+        }
 
-    console.log(avatarPath)
+        const userDB = await User.findById(id);
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { nome, cognome, email, dataDiNascita, avatar: avatarPath, docPersonali },
-      { new: true }
-    );
+        // Qui prendiamo i file caricati da multer
+        const uploadedDocs = request.files?.map(file => file.path) || [];
 
-    if (!updatedUser) {
-      return response.status(404).json({ message: "Utente non trovato" });
-    }
+        // Uniamo i documenti vecchi e quelli nuovi
+        const allDocs = [...userDB.docPersonali, ...uploadedDocs];
 
-    if(updatedUser?.avatar !== avatarPath) {
-        return response.status(501).json({message: "Immagine non supportata"})
-    }
 
-    const html = `
+
+
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { nome, cognome, email, dataDiNascita, docPersonali: allDocs }, // aggiorna solo se arrivano nuovi file },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return response.status(404).json({ message: "Utente non trovato" });
+        }
+
+        if (request.file && updatedUser?.avatar !== avatarPath) {
+            return response.status(415).json({ message: "Formato immagine non supportato" });
+        }
+
+        const html = `
       <h1>Dati utente modificati</h1>
       <p>Ciao ${updatedUser.nome} ${updatedUser.cognome}, i tuoi dati utente sono stati modificati correttamente.</p>
     `;
 
-    console.log("Invio mail a:", updatedUser.email);
+        console.log("Invio mail a:", updatedUser.email);
 
-    await mailer.sendMail({
-      to: updatedUser.email,
-      subject: "Dati aggiornati correttamente",
-      html,
-      from: "amministrazione@teamnewracing.com",
-    });
+        await mailer.sendMail({
+            to: updatedUser.email,
+            subject: "Dati aggiornati correttamente",
+            html,
+            from: "amministrazione@teamnewracing.com",
+        });
 
-    return response.status(200).json(updatedUser);
+        return response.status(200).json(updatedUser);
 
-  } catch (error) {
-    console.error("Errore in modifyUser:", error);
-    return response
-      .status(500)
-      .json({ message: "Errore nella modifica dell'utente", error: error.message });
-  }
+    } catch (error) {
+        console.error("Errore in modifyUser:", error);
+        return response
+            .status(500)
+            .json({ message: "Errore nella modifica dell'utente", error: error.message });
+    }
 }
 
 
