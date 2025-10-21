@@ -37,7 +37,7 @@ const documentiStorage = new CloudinaryStorage({
   params: {
     folder: "user_documents", // cartella su Cloudinary
     allowed_formats: ["pdf", "jpg", "jpeg", "png"],
-    resource_type: "auto", // permette di caricare anche PDF
+    resource_type: "raw",  // permette di caricare PDF e altri tipi di file 
   },
 });
 

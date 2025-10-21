@@ -13,7 +13,7 @@ const UserSchema = new Schema({
     isAdmin: { type: String, required: false },
     ruolo: { type: String, required: false, default: "Visitor" },
     categoria: { type: String, required: false},
-    docPersonali: [{ type: String, required: false }], // array di URL 
+    docPersonali: [{ type: Object, required: false }], // array di URL 
     ranking: { type: Number, required: false },//Da vedere come popolarlo e calcolarlo in base ai risultati ottenuti (opzionale)
     googleId: String
 })

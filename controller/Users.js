@@ -118,63 +118,49 @@ export async function modifyUserAndAvatar(request, response) {
     }
 }
 
+
 export async function modifyUserAndDoc(request, response) {
-    try {
-        const { id } = request.params;
-        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
+  try {
+    const { id } = request.params;
 
-        // Controllo ID valido
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return response.status(400).json({ message: "ID utente non valido" });
-        }
-
-        const userDB = await User.findById(id);
-
-        // Qui prendiamo i file caricati da multer
-        const uploadedDocs = request.files?.map(file => file.path) || [];
-
-        // Uniamo i documenti vecchi e quelli nuovi
-        const allDocs = [...userDB.docPersonali, ...uploadedDocs];
-
-
-
-
-        const updatedUser = await User.findByIdAndUpdate(
-            id,
-            { nome, cognome, email, dataDiNascita, docPersonali: allDocs }, // aggiorna solo se arrivano nuovi file },
-            { new: true }
-        );
-
-        if (!updatedUser) {
-            return response.status(404).json({ message: "Utente non trovato" });
-        }
-
-        if (request.file && updatedUser?.avatar !== avatarPath) {
-            return response.status(415).json({ message: "Formato immagine non supportato" });
-        }
-
-        const html = `
-      <h1>Dati utente modificati</h1>
-      <p>Ciao ${updatedUser.nome} ${updatedUser.cognome}, i tuoi dati utente sono stati modificati correttamente.</p>
-    `;
-
-        console.log("Invio mail a:", updatedUser.email);
-
-        await mailer.sendMail({
-            to: updatedUser.email,
-            subject: "Dati aggiornati correttamente",
-            html,
-            from: "amministrazione@teamnewracing.com",
-        });
-
-        return response.status(200).json(updatedUser);
-
-    } catch (error) {
-        console.error("Errore in modifyUser:", error);
-        return response
-            .status(500)
-            .json({ message: "Errore nella modifica dell'utente", error: error.message });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response.status(400).json({ message: "ID utente non valido" });
     }
+
+    const userDB = await User.findById(id);
+    if (!userDB) return response.status(404).json({ message: "Utente non trovato" });
+
+    // Se arrivano file nuovi, li aggiungiamo
+    const uploadedDocs = request.files?.map(file => ({
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: file.path,
+    })) || [];
+
+    // Se arriva un array `docPersonali` (JSON), lo usiamo per aggiornare il DB
+    let updatedDocs = userDB.docPersonali;
+    if (request.body.docPersonali) {
+      updatedDocs = JSON.parse(request.body.docPersonali);
+    }
+
+    // Aggiungi eventuali file caricati
+    const allDocs = [...updatedDocs, ...uploadedDocs];
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { docPersonali: allDocs },
+      { new: true }
+    );
+
+    return response.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Errore in modifyUserDocs:", error);
+    return response.status(500).json({
+      message: "Errore nella modifica dei documenti utente",
+      error: error.message,
+    });
+  }
 }
 
 
