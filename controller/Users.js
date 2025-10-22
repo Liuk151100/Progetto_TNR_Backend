@@ -34,7 +34,7 @@ export async function getSingleUser(request, response) {
 
 export async function createUser(request, response) {
     try {
-        const { nome, cognome, email, dataDiNascita, docPersonali } = request.body;
+        const { nome, cognome, email, dataDiNascita, password} = request.body;
 
         if (!nome || !cognome || !email || !dataDiNascita) {
             return response.status(400).json({ message: "I campi nome, cognome, email e data di nascita sono obbligatori" })
@@ -46,9 +46,13 @@ export async function createUser(request, response) {
             return response.status(400).json({ message: "Utente già registrato" });
         }
 
-        const newUser = new User({ nome, cognome, email, dataDiNascita, avatar: request.file.path, docPersonali })
+        const avatarPath = request.file ? request.file.path : undefined;
+
+        console.log(avatarPath)
+
+        const newUser = new User({ nome, cognome, email, password, dataDiNascita, avatar: avatarPath })
         const userSaved = await newUser.save()
-        response.status(201).json(userSaved)
+        return response.status(201).json({message: "Utente registrato con successo"});
 
     } catch (error) {
         response
@@ -82,7 +86,7 @@ export async function modifyUserAndAvatar(request, response) {
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            { nome, cognome, email, dataDiNascita, avatar: avatarPath, }, // aggiorna solo se arrivano nuovi file },
+            { nome, cognome, email, dataDiNascita, avatar: avatarPath, ruolo, categoria }, // aggiorna solo se arrivano nuovi file },
             { new: true }
         );
 
