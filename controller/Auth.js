@@ -21,7 +21,7 @@ export async function register(request, response) {
       <br>
     `;
     
-    const infoMail = await mailer.sendMail({
+    const infoMail = mailer.sendMail({
       to: email, 
       subject: "Benvenuto nel Team",
       html: html,

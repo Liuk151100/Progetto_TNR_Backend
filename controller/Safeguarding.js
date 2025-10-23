@@ -11,7 +11,7 @@ export async function createsegn(request, response) {
         }));
 
 
-        const responseEmail = await mailer.sendMail({
+        const responseEmail = mailer.sendMail({
             from: "amministrazione@teamnewracing.com",
             to: "lucafaini20@gmail.com", //safeguarding.newracing@gmail.com
             replyTo: email,
@@ -30,7 +30,7 @@ export async function createsegn(request, response) {
         <p>Grazie per la collaborazione</p>
       `;
 
-            await mailer.sendMail({
+            mailer.sendMail({
                 from: "amministrazione@teamnewracing.com",
                 to: email,
                 subject: `Segnalazione Safeguarding Team New Racing`,

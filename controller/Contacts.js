@@ -5,7 +5,7 @@ export async function contactUs(request, response) {
   try {
     const { email, message } = request.body;
     console.log(email)
-    const info = await mailer.sendMail({
+    const info = mailer.sendMail({
       from: "amministrazione@teamnewracing.com", // mittente autenticato
       to: "amministrazione@teamnewracing.com",
       replyTo: email,  // email dell’utente che ha compilato il form

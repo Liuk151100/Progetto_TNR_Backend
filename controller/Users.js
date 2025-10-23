@@ -64,7 +64,7 @@ export async function createUser(request, response) {
         </ul>
         <p>Le credenziali e tutti gli altri dati, una volta fatto il primo accesso, potranno essere modificato nella sezione del profilo in alto a destra</p>
       `;
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: newUser.email,
                 subject: "Benvenuto nel team",
                 html,
@@ -86,7 +86,7 @@ export async function createUser(request, response) {
         </ul>
         <p>Le credenziali e tutti gli altri dati, una volta fatto il primo accesso, potranno essere modificato nella sezione del profilo in alto a destra</p>
       `;
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: newUser.email,
                 subject: "Benvenuto nel team",
                 html,

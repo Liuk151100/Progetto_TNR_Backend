@@ -94,7 +94,7 @@ export async function createEvent(request, response) {
         che si terrà dal <b>${startFormatted}</b> al <b>${endFormatted}</b>, presso <b>${luogo}</b>. Saremmo molto felici se riuscissi a venire e condividere questo
         momento insieme a tutto lo staff.</p>
       `;
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: user.email,
                 subject: "Nuovo evento in programma",
                 html,
@@ -151,7 +151,7 @@ export async function modifyEvent(request, response) {
         <b>${updatedEvent.titolo}</b>, che si terrà dal <b>${startFormatted}</b> al <b>${endFormatted}</b>, presso <b>${updatedEvent.luogo}</b>.
         Ti aspettiamo per condividere questo momento insieme a tutto lo staff!</p>
       `;
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: user.email,
                 subject: "Aggiornamento evento in programma",
                 html,
@@ -196,7 +196,7 @@ export async function joinEvent(request, response) {
           <p>${user.nome} ${user.cognome} ha confermato la partecipazione all'evento <b>${event.titolo}</b>.</p>
         `;
 
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: "kartiva@icloud.com",
                 subject: `Conferma partecipazione evento ${event.titolo} di ${user.nome} ${user.cognome}`,
                 html,
@@ -245,7 +245,7 @@ export async function deleteEvent(request, response) {
         l'evento <b>${deletedEvent.titolo}</b> che si sarebbe tenuto dal <b>${startFormatted}</b> al <b>${endFormatted}</b>, presso <b>${deletedEvent.luogo}</b>.
         Riceverai una mail nel caso in cui l'evento verrà aggiunto di nuovo al calendario.</p>
       `;
-            await mailer.sendMail({
+            mailer.sendMail({
                 to: user.email,
                 subject: "Cancellazione evento in programma",
                 html,
