@@ -185,22 +185,30 @@ export async function joinEvent(request, response) {
         if (!event.partecipanti.includes(userId)) {
             event.partecipanti.push(userId);
             await event.save();
+            var userExist = false
+        } else {
+            userExist = true
         }
 
         const user = await User.findById(userId);
-        const html = `
-      <h1>Conferma partecipazione</h1>
-      <p>${user.nome} ${user.cognome} ha confermato la partecipazione all'evento <b>${event.titolo}</b>.</p>
-    `;
+            const html = `
+          <h1>Conferma partecipazione</h1>
+          <p>${user.nome} ${user.cognome} ha confermato la partecipazione all'evento <b>${event.titolo}</b>.</p>
+        `;
 
-        await mailer.sendMail({
-            to: "kartiva@icloud.com",
-            subject: `Conferma partecipazione evento ${event.titolo} di ${user.nome} ${user.cognome}`,
-            html,
-            from: "amministrazione@teamnewracing.com",
-        });
+            await mailer.sendMail({
+                to: "kartiva@icloud.com",
+                subject: `Conferma partecipazione evento ${event.titolo} di ${user.nome} ${user.cognome}`,
+                html,
+                from: "amministrazione@teamnewracing.com",
+            });
 
-        response.status(200).json(event);
+        if (userExist) {
+            response.status(200).json({ message: "Hai già inviato la partecipazione" });
+        } else {
+            response.status(200).json({ message: "Hai confermato la tua partecipazione" });
+
+        }
     } catch (error) {
         console.error(error);
         response.status(500).json({ message: "Errore nel join dell'evento", error });
