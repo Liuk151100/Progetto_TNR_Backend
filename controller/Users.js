@@ -35,7 +35,7 @@ export async function getSingleUser(request, response) {
 
 export async function createUser(request, response) {
     try {
-        const { nome, cognome, email, dataDiNascita, password } = request.body;
+        const { nome, cognome, email, dataDiNascita, password, ruolo, categoria } = request.body;
 
         if (!nome || !cognome || !email || !dataDiNascita) {
             return response.status(400).json({ message: "I campi nome, cognome, email e data di nascita sono obbligatori" })
@@ -50,11 +50,52 @@ export async function createUser(request, response) {
         const avatarPath = request.file ? request.file.path : undefined;
 
         console.log(avatarPath)
+        if (ruolo && categoria) {
+            const newUser = new User({ nome, cognome, email, password, dataDiNascita, avatar: avatarPath, ruolo, categoria })
+            const userSaved = await newUser.save()
 
-        const newUser = new User({ nome, cognome, email, password, dataDiNascita, avatar: avatarPath })
-        const userSaved = await newUser.save()
+            const html = `
+        <h1>Benvenuto nel team</h1>
+        <p>Ciao ${newUser.nome} ${newUser.cognome}, il presidente del Team New Racing ti dà il benvenuto all'interno del team, in qualità di ${newUser.ruolo} di ${newUser.categoria}.</p>
+        <p>Le tue credenziali di accesso sono le seguenti:</p>
+        <ul>
+        <li> email: ${newUser.email} </li>
+        <li> password: ${password} </li>
+        </ul>
+        <p>Le credenziali e tutti gli altri dati, una volta fatto il primo accesso, potranno essere modificato nella sezione del profilo in alto a destra</p>
+      `;
+            await mailer.sendMail({
+                to: newUser.email,
+                subject: "Benvenuto nel team",
+                html,
+                from: "amministrazione@teamnewracing.com",
+            });
+
+            
+        } else {
+            const newUser = new User({ nome, cognome, email, password, dataDiNascita, avatar: avatarPath })
+            const userSaved = await newUser.save()
+
+            const html = `
+        <h1>Benvenuto nel team</h1>
+        <p>Ciao ${newUser.nome} ${newUser.cognome}, il presidente del Team New Racing ti dà il benvenuto all'interno del team, in qualità di ${newUser.ruolo} di ${newUser.categoria}.</p>
+        <p>Le tue credenziali di accesso sono le seguenti:</p>
+        <ul>
+        <li> email: ${newUser.email} </li>
+        <li> password: ${password} </li>
+        </ul>
+        <p>Le credenziali e tutti gli altri dati, una volta fatto il primo accesso, potranno essere modificato nella sezione del profilo in alto a destra</p>
+      `;
+            await mailer.sendMail({
+                to: newUser.email,
+                subject: "Benvenuto nel team",
+                html,
+                from: "amministrazione@teamnewracing.com",
+            });
+        }
+
+
         return response.status(201).json({ message: "Utente registrato con successo" });
-
     } catch (error) {
         response
             .status(500)

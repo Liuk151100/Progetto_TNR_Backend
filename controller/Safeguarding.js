@@ -11,14 +11,36 @@ export async function createsegn(request, response) {
         }));
 
 
-        await mailer.sendMail({
+        const responseEmail = await mailer.sendMail({
             from: "amministrazione@teamnewracing.com",
-            to: "safeguarding.newracing@gmail.com",
+            to: "lucafaini20@gmail.com", //safeguarding.newracing@gmail.com
             replyTo: email,
-            subject: `Nuova segnalazione da ${nome}`,
+            subject: `Segnalazione Safeguarding ${nome}`,
             text: messaggio,
             attachments: allegati,
         });
+
+        emailConferma(nome, email)
+
+        async function emailConferma(nome, email) {
+
+            const html = `
+        <h1>Grazie per la segnalazione</h1>
+        <p>Ciao ${nome}, il Team New Racing ha ricevuto la tua segnalazione e ti risponderà al più presto </p>
+        <p>Grazie per la collaborazione</p>
+      `;
+
+            await mailer.sendMail({
+                from: "amministrazione@teamnewracing.com",
+                to: email,
+                subject: `Segnalazione Safeguarding Team New Racing`,
+                text: html,
+                attachments: allegati,
+            });
+
+        }
+
+
         return response.status(200).json({ message: "Segnalazione inviata con successo" });
 
     } catch (error) {
